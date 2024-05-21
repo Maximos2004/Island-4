@@ -1,17 +1,18 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 namespace DialogueSystem
 {
     public class DialogueLine : DialogueBaseClass
     {
-        private Text textHolder;
+        private TextMeshProUGUI textHolder;
 
         [Header ("Text Options")]
         [SerializeField] private string input;
         [SerializeField] private Color textColor;
-        [SerializeField] private Font textFont;
+        [SerializeField] private TMP_FontAsset textFont;
 
         [Header("Time parameters")]
         [SerializeField] private float delay;
@@ -45,7 +46,7 @@ namespace DialogueSystem
 
         private void ResetLine()
         {
-            textHolder = GetComponent<Text>();
+            textHolder = GetComponent<TextMeshProUGUI>();
             textHolder.text = "";
             finished = false;
         }

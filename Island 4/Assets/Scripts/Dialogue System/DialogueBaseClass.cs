@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,7 +9,7 @@ namespace DialogueSystem
     {
         public bool finished { get; protected set; }
 
-        protected IEnumerator WriteText(string input, Text textHolder, Color textColor, Font textFont, float delay, AudioClip sound, float delayBetweenLines)
+        protected IEnumerator WriteText(string input, TextMeshProUGUI textHolder, Color textColor, TMP_FontAsset textFont, float delay, AudioClip sound, float delayBetweenLines)
         {
             textHolder.color = textColor;
             textHolder.font = textFont;
@@ -16,6 +17,7 @@ namespace DialogueSystem
             for (int i = 0; i < input.Length; i++)
             {
                 textHolder.text += input[i];
+                SoundForDialogue.instance.PlaySound(sound);
                 yield return new WaitForSeconds(delay);
             }
 

@@ -7,7 +7,7 @@ namespace DialogueSystem
     {
         private IEnumerator dialogueSeq;
         private bool dialogueFinished;
-        public Animator Anim;
+        [SerializeField] private Animator ChatAn;
 
         private void OnEnable()
         {
@@ -17,9 +17,10 @@ namespace DialogueSystem
 
         private IEnumerator dialogueSequence()
         {
+            yield return new WaitForSeconds(0.01f);
             if (!dialogueFinished)
             {
-                for (int i = 0; i < transform.childCount - 1; i++)
+                for (int i = 0; i <= transform.childCount - 1; i++)
                 {
                     Deactivate();
                     transform.GetChild(i).gameObject.SetActive(true);
@@ -38,7 +39,7 @@ namespace DialogueSystem
         }
         IEnumerator dialogueFinished1()
         {
-            Anim.SetBool("ChatDisapears", true);
+            ChatAn.SetBool("ChatDisapears", true);
             yield return new WaitForSeconds(0.6f);
             dialogueFinished = true;
             gameObject.SetActive(false);
