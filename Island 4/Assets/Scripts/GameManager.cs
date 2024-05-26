@@ -25,7 +25,10 @@ public class GameManager : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private GameObject PauseButtonUI;
-    [SerializeField] private GameObject IslandUI, PauseMenu, PauseContainer, Options, Connect4UI, Connect4UICoudy, Connect4UILeaveButton, BackButtonOptionsOld, BackButtonOptionsNew;
+    [SerializeField] private GameObject IslandUI, PauseMenu, PauseContainer, Options, Connect4UI, Connect4UICoudy, Connect4UILeaveButton, BackButtonOptionsOld, BackButtonOptionsNew, Score;
+
+    [Header("Connect4")]
+    [SerializeField] private Connect4Game connect4Game;
 
     private bool InGame;
 
@@ -52,6 +55,7 @@ public class GameManager : MonoBehaviour
         if (FirstMeeting == false)
         {
             DialogueContener.SetActive(true);
+            FindObjectOfType<AudioManager>().Play("DialPop");
             ChatAn.SetBool("ChatDisapears", false);
             yield return new WaitForSeconds(1f);
             Prologue.SetActive(true);
@@ -64,6 +68,7 @@ public class GameManager : MonoBehaviour
         else
         {
             DialogueContener.SetActive(true);
+            FindObjectOfType<AudioManager>().Play("DialPop");
             ChatAn.SetBool("ChatDisapears", false);
             yield return new WaitForSeconds(1f);
             WelcomeBackDialogue.SetActive(true);
@@ -81,8 +86,10 @@ public class GameManager : MonoBehaviour
             Connect4UI.SetActive(true);
             Connect4UICoudy.SetActive(true);
             Connect4UILeaveButton.SetActive(false);
+            Score.SetActive(false);
 
             DialogueContener.SetActive(true);
+            FindObjectOfType<AudioManager>().Play("DialPop");
             ChatAn.SetBool("ChatDisapears", false);
             yield return new WaitForSeconds(1f);
             FirstGameDialogue.SetActive(true);
@@ -114,6 +121,7 @@ public class GameManager : MonoBehaviour
         if(Friend && !FirstFriend)
         {
             DialogueContener.SetActive(true);
+            FindObjectOfType<AudioManager>().Play("DialPop");
             ChatAn.SetBool("ChatDisapears", false);
             yield return new WaitForSeconds(1f);
             FirstFriendDialogue.SetActive(true);
@@ -126,6 +134,7 @@ public class GameManager : MonoBehaviour
         if (!Friend)
         {
             DialogueContener.SetActive(true);
+            FindObjectOfType<AudioManager>().Play("DialPop");
             ChatAn.SetBool("ChatDisapears", false);
             yield return new WaitForSeconds(1f);
             LetsPlayDialogue.SetActive(true);
@@ -138,6 +147,14 @@ public class GameManager : MonoBehaviour
         InGame = true;
         IslandUIAn.SetBool("Disappear", true);
         StartCoroutine(DisableGameobjectOnRightTime(IslandUI));
+        if (Friend)
+        {
+            connect4Game.VsCloudy = false;
+        }
+        else
+        {
+            connect4Game.VsCloudy = true;
+        }
 
         yield return new WaitForSeconds(3f);
 
@@ -146,16 +163,14 @@ public class GameManager : MonoBehaviour
         if (Friend)
         {
             Connect4UICoudy.SetActive(false);
+            Score.SetActive(true);
             Connect4UILeaveButton.SetActive(true);
-
-            //Start Friend Game
         }
         else
         {
             Connect4UICoudy.SetActive(true);
+            Score.SetActive(false);
             Connect4UILeaveButton.SetActive(true);
-
-            //Start Cloudy Game
         }
     }
 
@@ -169,7 +184,7 @@ public class GameManager : MonoBehaviour
         Connect4UIAn.SetBool("Disappear", true);
         StartCoroutine(DisableGameobjectOnRightTime(Connect4UI));
 
-        //Clear Board
+        ResetConnect4();
     }
 
     public void OptionsButton()
@@ -212,4 +227,10 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion Button Functions
+
+    public void ResetConnect4()
+    {
+        connect4Game.ResetCounter();
+        connect4Game.Turn = false;
+    }
 }
