@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -10,6 +11,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject WelcomeBackDialogue;
     [SerializeField] private GameObject FirstFriendDialogue;
     [SerializeField] private GameObject LetsPlayDialogue;
+    [SerializeField] private GameObject LetsTryAgain;
 
     //Values for Save System
     [HideInInspector] public int Streak;
@@ -29,6 +31,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Connect4")]
     [SerializeField] private Connect4Game connect4Game;
+    [SerializeField] private List<BoxCollider> Collumes = new List<BoxCollider>();
 
     private bool InGame;
 
@@ -87,6 +90,7 @@ public class GameManager : MonoBehaviour
             Connect4UICoudy.SetActive(true);
             Connect4UILeaveButton.SetActive(false);
             Score.SetActive(false);
+            connect4Game.VsCloudy = true;
 
             DialogueContener.SetActive(true);
             FindObjectOfType<AudioManager>().Play("DialPop");
@@ -97,15 +101,48 @@ public class GameManager : MonoBehaviour
             yield return new WaitUntil(() => FirstGameDialogue.activeSelf == false);
             DialogueContener.SetActive(false);
 
-            //Wait Until Game Ends
+            foreach (BoxCollider collumes in Collumes)
+            {
+                collumes.enabled = true;
+            }
+
+            yield return new WaitUntil(() => connect4Game.WinMatchAgainstCloudy);
 
             FirstGame = true;
+            BackToIslandButton();
             SaveSystem.SaveGame(this);
+        }
+        foreach (BoxCollider collumes in Collumes)
+        {
+            collumes.enabled = true;
         }
         IslandUIAn.SetBool("Disappear", false);
         IslandUI.SetActive(true);
     }
-    
+
+    public IEnumerator WowYouLosThe1stMatch()
+    {
+        StartCoroutine(WowYouLosThe1stMatch());
+        foreach (BoxCollider collumes in Collumes)
+        {
+            collumes.enabled = false;
+        }
+
+        DialogueContener.SetActive(true);
+        FindObjectOfType<AudioManager>().Play("DialPop");
+        ChatAn.SetBool("ChatDisapears", false);
+        yield return new WaitForSeconds(1f);
+        LetsTryAgain.SetActive(true);
+
+        yield return new WaitUntil(() => LetsTryAgain.activeSelf == false);
+        DialogueContener.SetActive(false);
+
+        foreach (BoxCollider collumes in Collumes)
+        {
+            collumes.enabled = true;
+        }
+    }
+
     #region Button Functions
 
     public void PlayWithCloudyButton()

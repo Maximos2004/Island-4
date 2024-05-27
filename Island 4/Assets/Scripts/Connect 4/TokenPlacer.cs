@@ -4,6 +4,7 @@ public class TokenPlacer : MonoBehaviour
 {
     private GameObject previousObject;
     [SerializeField] private Connect4Game connect4Game;
+    [SerializeField] private GameManager gameManager;
 
     [SerializeField] private GameObject P1Wins, P2Wins;
 
@@ -65,6 +66,7 @@ public class TokenPlacer : MonoBehaviour
                 }
                 else
                 {
+                    connect4Game.WinMatchAgainstCloudy = true;
                     connect4Game.ResetCounter();
                 }
             }
@@ -79,6 +81,10 @@ public class TokenPlacer : MonoBehaviour
                 else
                 {
                     connect4Game.ResetCounter();
+                    if (!gameManager.FirstGame)
+                    {
+                        StartCoroutine(gameManager.WowYouLosThe1stMatch());
+                    }
                 }
             }
         }
