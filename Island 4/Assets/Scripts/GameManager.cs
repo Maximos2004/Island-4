@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,10 +12,14 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject WelcomeBackDialogue;
     [SerializeField] private GameObject FirstFriendDialogue;
     [SerializeField] private GameObject LetsPlayDialogue;
-    [SerializeField] private GameObject LetsTryAgain;
+    [SerializeField] private GameObject LetsTryAgainDialogue;
+    [SerializeField] private GameObject FirstWinDialogue;
+    [SerializeField] private GameObject WinDialogue;
+    [SerializeField] private GameObject LoserDialogue;
 
     //Values for Save System
     [HideInInspector] public int Streak;
+    [HideInInspector] public int WinStreak;
     [HideInInspector] public bool FirstGame;
     [HideInInspector] public bool FirstWin;
     [HideInInspector] public bool FirstFriend;
@@ -27,7 +32,8 @@ public class GameManager : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private GameObject PauseButtonUI;
-    [SerializeField] private GameObject IslandUI, PauseMenu, PauseContainer, Options, Connect4UI, Connect4UICoudy, Connect4UILeaveButton, BackButtonOptionsOld, BackButtonOptionsNew, Score;
+    [SerializeField] private GameObject IslandUI, PauseMenu, PauseContainer, Options, Connect4UI, Connect4UICoudy, Connect4UILeaveButton, BackButtonOptionsOld, BackButtonOptionsNew, Score, SelectBuildingUI;
+    [SerializeField] private TMP_Text WinStreakText;
 
     [Header("Connect4")]
     [SerializeField] private Connect4Game connect4Game;
@@ -43,6 +49,7 @@ public class GameManager : MonoBehaviour
         if (data != null)
         {
             Streak = data.Streak;
+            WinStreak = data.WinStreak;
             FirstGame = data.FirstGame;
             FirstWin = data.FirstWin;
             FirstFriend = data.FirstFriend;
@@ -106,11 +113,7 @@ public class GameManager : MonoBehaviour
                 collumes.enabled = true;
             }
 
-            yield return new WaitUntil(() => connect4Game.WinMatchAgainstCloudy);
-
-            FirstGame = true;
-            BackToIslandButton();
-            SaveSystem.SaveGame(this);
+            yield return new WaitUntil(() => FirstGame == true);
         }
         foreach (BoxCollider collumes in Collumes)
         {
@@ -132,9 +135,9 @@ public class GameManager : MonoBehaviour
         FindObjectOfType<AudioManager>().Play("DialPop");
         ChatAn.SetBool("ChatDisapears", false);
         yield return new WaitForSeconds(1f);
-        LetsTryAgain.SetActive(true);
+        LetsTryAgainDialogue.SetActive(true);
 
-        yield return new WaitUntil(() => LetsTryAgain.activeSelf == false);
+        yield return new WaitUntil(() => LetsTryAgainDialogue.activeSelf == false);
         DialogueContener.SetActive(false);
 
         foreach (BoxCollider collumes in Collumes)
@@ -269,5 +272,107 @@ public class GameManager : MonoBehaviour
     {
         connect4Game.ResetCounter();
         connect4Game.Turn = false;
+    }
+    public IEnumerator Winer()
+    {
+        CameraAn.SetBool("Connect 4", false);
+        InGame = false;
+
+        Connect4UIAn.SetBool("Disappear", true);
+        StartCoroutine(DisableGameobjectOnRightTime(Connect4UI));
+
+        ResetConnect4();
+
+        DialogueContener.SetActive(true);
+        FindObjectOfType<AudioManager>().Play("DialPop");
+        ChatAn.SetBool("ChatDisapears", false);
+        yield return new WaitForSeconds(1f);
+        WinDialogue.SetActive(true);
+
+        yield return new WaitUntil(() => WinDialogue.activeSelf == false);
+        DialogueContener.SetActive(false);
+
+        SelectBuildingUI.SetActive(true);
+    }
+    public IEnumerator Lost()
+    {
+        CameraAn.SetBool("Connect 4", false);
+        InGame = false;
+        IslandUIAn.SetBool("Disappear", false);
+        IslandUI.SetActive(true);
+
+        Connect4UIAn.SetBool("Disappear", true);
+        StartCoroutine(DisableGameobjectOnRightTime(Connect4UI));
+
+        ResetConnect4();
+
+        DialogueContener.SetActive(true);
+        FindObjectOfType<AudioManager>().Play("DialPop");
+        ChatAn.SetBool("ChatDisapears", false);
+        yield return new WaitForSeconds(1f);
+        LoserDialogue.SetActive(true);
+
+        yield return new WaitUntil(() => LoserDialogue.activeSelf == false);
+        DialogueContener.SetActive(false);
+    }
+
+    public IEnumerator Win1stTime()
+    {
+        CameraAn.SetBool("Connect 4", false);
+        InGame = false;
+        IslandUIAn.SetBool("Disappear", false);
+        IslandUI.SetActive(true);
+
+        Connect4UIAn.SetBool("Disappear", true);
+        StartCoroutine(DisableGameobjectOnRightTime(Connect4UI));
+
+        ResetConnect4();
+
+        DialogueContener.SetActive(true);
+        FindObjectOfType<AudioManager>().Play("DialPop");
+        ChatAn.SetBool("ChatDisapears", false);
+        yield return new WaitForSeconds(1f);
+        FirstWinDialogue.SetActive(true);
+
+        yield return new WaitUntil(() => FirstWinDialogue.activeSelf == false);
+        DialogueContener.SetActive(false);
+
+        IslandUIAn.SetBool("Disappear", true);
+        StartCoroutine(DisableGameobjectOnRightTime(IslandUI));
+
+        yield return new WaitForSeconds(0.5f);
+
+        DialogueContener.SetActive(true);
+        FindObjectOfType<AudioManager>().Play("DialPop");
+        ChatAn.SetBool("ChatDisapears", false);
+        yield return new WaitForSeconds(1f);
+        WinDialogue.SetActive(true);
+
+        yield return new WaitUntil(() => WinDialogue.activeSelf == false);
+        DialogueContener.SetActive(false);
+
+        SelectBuildingUI.SetActive(true);
+
+        yield return new WaitUntil(() => IslandUI.activeSelf == false);
+
+        FirstGame = true;
+        SaveSystem.SaveGame(this);
+    }
+
+    public void AddStreakCount()
+    {
+        WinStreak++;
+        SaveSystem.SaveGame(this);
+    }
+
+    public void ResetStreakCount()
+    {
+        WinStreak = 0;
+        SaveSystem.SaveGame(this);
+    }
+
+    private void Update()
+    {
+        WinStreakText.text = WinStreak.ToString();
     }
 }

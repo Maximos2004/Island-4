@@ -69,4 +69,38 @@ public class SaveSystem
         }
     }
     #endregion Save Game
+
+    #region Save Buildings
+    public static void SaveBuildings(BuildingPlacement B)
+    {
+        BinaryFormatter formatter = new BinaryFormatter();
+        string path = Application.persistentDataPath + "/Buildings.SMK";
+        FileStream stream = new FileStream(path, FileMode.Create);
+
+        BuildingData data = new BuildingData(B);
+
+        formatter.Serialize(stream, data);
+        stream.Close();
+    }
+
+    public static BuildingData LoadBuildings()
+    {
+        string path = Application.persistentDataPath + "/Buildings.SMK";
+        if (File.Exists(path))
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+            FileStream stream = new FileStream(path, FileMode.Open);
+
+            BuildingData data = formatter.Deserialize(stream) as BuildingData;
+            stream.Close();
+
+            return data;
+        }
+        else
+        {
+            Debug.LogError("Save file not found in" + path);
+            return null;
+        }
+    }
+    #endregion Save Buildings
 }

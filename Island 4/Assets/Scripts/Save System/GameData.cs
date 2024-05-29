@@ -2,6 +2,7 @@
 public class GameData
 {
     public int Streak;
+    public int WinStreak;
     public bool FirstMeeting;
     public bool FirstGame;
     public bool FirstWin;
@@ -10,6 +11,7 @@ public class GameData
     public GameData(GameManager G)
     {
         Streak = G.Streak;
+        WinStreak = G.WinStreak;
         FirstGame = G.FirstGame;
         FirstWin = G.FirstWin;
         FirstFriend = G.FirstFriend;

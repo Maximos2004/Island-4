@@ -12,8 +12,12 @@ public class Connect4AI : MonoBehaviour
     [SerializeField] private Image Cloudy;
     [SerializeField] private Sprite CloudyIdle, CloudySurprised, CloudySmug, CloudyThinking;
 
+    private bool x;
+
     public IEnumerator MakeMove()
     {
+        maxDepth = Random.Range(1, 7);
+
         Cloudy.sprite = CloudyThinking;
         CloudyAn.Play("Cloudy Pop", 0, 0);
 
@@ -136,9 +140,11 @@ public class Connect4AI : MonoBehaviour
 
         return true;
     }
-
+    
     private int EvaluateGrid(int[,] grid)
     {
+        x = false;
+        int score = 0;
         // Debugging: Check for immediate win or block opportunities
         for (int col = 0; col < 7; col++)
         {
@@ -151,11 +157,8 @@ public class Connect4AI : MonoBehaviour
                     Debug.Log("AI can win by playing in column " + col);
                     Cloudy.sprite = CloudySmug;
                     grid[row, col] = 0;
-                    return int.MaxValue;
-                }
-                else
-                {
-                    Cloudy.sprite = CloudyIdle;
+                    x = true;
+                    score = int.MaxValue;
                 }
                 grid[row, col] = 0;
 
@@ -165,31 +168,36 @@ public class Connect4AI : MonoBehaviour
                     Debug.Log("Opponent can win; AI should block column " + col);
                     Cloudy.sprite = CloudySurprised;
                     grid[row, col] = 0;
-                    return int.MinValue;
-                }
-                else
-                {
-                    Cloudy.sprite = CloudyIdle;
+                    x = true;
+                    score = int.MinValue;
                 }
                 grid[row, col] = 0;
             }
         }
-
-        // Simple evaluation function to score the grid
-        int score = 0;
-        for (int row = 0; row < 6; row++)
+        if (!x)
         {
-            for (int col = 0; col < 7; col++)
+            // Simple evaluation function to score the grid
+            score = 0;
+            for (int row = 0; row < 6; row++)
             {
-                if (grid[row, col] == 2)
+                for (int col = 0; col < 7; col++)
                 {
-                    score += GetScoreForCell(grid, row, col, 2);
-                }
-                else if (grid[row, col] == 1)
-                {
-                    score -= GetScoreForCell(grid, row, col, 1);
+                    if (grid[row, col] == 2)
+                    {
+                        score += GetScoreForCell(grid, row, col, 2);
+                        Cloudy.sprite = CloudyIdle;
+                    }
+                    else if (grid[row, col] == 1)
+                    {
+                        score -= GetScoreForCell(grid, row, col, 1);
+                        Cloudy.sprite = CloudyIdle;
+                    }
                 }
             }
+        }
+        else
+        {
+            x = false;
         }
         return score;
     }

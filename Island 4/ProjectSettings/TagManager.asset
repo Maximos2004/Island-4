@@ -6,11 +6,12 @@ TagManager:
   tags:
   - Grid
   - Last Grid
+  - FxTemporaire
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Island
   - Water
   - UI
   - 

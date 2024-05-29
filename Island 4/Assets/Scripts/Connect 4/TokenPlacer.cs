@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class TokenPlacer : MonoBehaviour
@@ -66,8 +67,16 @@ public class TokenPlacer : MonoBehaviour
                 }
                 else
                 {
-                    connect4Game.WinMatchAgainstCloudy = true;
+                    if (!gameManager.FirstGame)
+                    {
+                        StartCoroutine(gameManager.Win1stTime());
+                    }
+                    else
+                    {
+                        StartCoroutine(gameManager.Winer());
+                    }
                     connect4Game.ResetCounter();
+                    gameManager.AddStreakCount();
                 }
             }
             else
@@ -80,11 +89,16 @@ public class TokenPlacer : MonoBehaviour
                 }
                 else
                 {
-                    connect4Game.ResetCounter();
                     if (!gameManager.FirstGame)
                     {
                         StartCoroutine(gameManager.WowYouLosThe1stMatch());
                     }
+                    else
+                    {
+                        StartCoroutine(gameManager.Lost());
+                    }
+                    connect4Game.ResetCounter();
+                    gameManager.ResetStreakCount();
                 }
             }
         }

@@ -52,7 +52,10 @@ public class Token : MonoBehaviour
             {
                 if (!connect4Game.Turn)
                 {
-                    StartCoroutine(DroppingTocken(TockenToEnable, TockenAn));
+                    if(TockenToEnable.activeSelf == true)
+                    {
+                        StartCoroutine(DroppingTocken(TockenToEnable, TockenAn));
+                    }
                 }
                 else if (!connect4Game.VsCloudy)
                 {

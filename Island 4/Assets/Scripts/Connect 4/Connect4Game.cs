@@ -8,7 +8,6 @@ public class Connect4Game : MonoBehaviour
     public int[,] grid = new int[6, 7]; // 6 rows, 7 columns
     public bool Turn; // True is Player1, False is Player2
     public bool VsCloudy; // True is vs the AI
-    public bool WinMatchAgainstCloudy;
 
     [SerializeField] private List<GameObject> GridCells = new List<GameObject>();
 
