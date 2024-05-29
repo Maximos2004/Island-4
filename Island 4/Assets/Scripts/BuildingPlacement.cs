@@ -9,6 +9,8 @@ public class BuildingPlacement : MonoBehaviour
     [SerializeField] private LayerMask placementLayerMask; //The layer mask to define valid placement areas
     [SerializeField] private LayerMask collisionLayerMask; //The layer mask to define which layers to check for collisions
     [SerializeField] private Transform parentTransform; //The parent transform under which buildings will be placed
+    [SerializeField] private GameObject BuildingPlacerUI, IslandUI;
+    [SerializeField] private Animator IslandUIAn;
 
     private bool isPlacing = false;
     private float rotationSpeed = 70f; //Speed of rotation
@@ -66,6 +68,9 @@ public class BuildingPlacement : MonoBehaviour
                     FindObjectOfType<AudioManager>().Play("Place Building");
                     SaveSystem.SaveBuildings(this);
                     isPlacing = false;
+                    BuildingPlacerUI.SetActive(false);
+                    IslandUIAn.SetBool("Disappear", false);
+                    IslandUI.SetActive(true);
                     highlightObject[BuildingNumber].SetActive(false);
                     invalidHighlightObject[BuildingNumber].SetActive(false);
                 }

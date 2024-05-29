@@ -158,59 +158,62 @@ public class GameManager : MonoBehaviour
     }
     IEnumerator StartGame(bool Friend)
     {
-        if(Friend && !FirstFriend)
+        if (DialogueContener.activeSelf == false)
         {
-            DialogueContener.SetActive(true);
-            FindObjectOfType<AudioManager>().Play("DialPop");
-            ChatAn.SetBool("ChatDisapears", false);
-            yield return new WaitForSeconds(1f);
-            FirstFriendDialogue.SetActive(true);
+            if (Friend && !FirstFriend)
+            {
+                DialogueContener.SetActive(true);
+                FindObjectOfType<AudioManager>().Play("DialPop");
+                ChatAn.SetBool("ChatDisapears", false);
+                yield return new WaitForSeconds(1f);
+                FirstFriendDialogue.SetActive(true);
 
-            yield return new WaitUntil(() => FirstFriendDialogue.activeSelf == false);
-            DialogueContener.SetActive(false);
-            FirstFriend = true;
-            SaveSystem.SaveGame(this);
-        }
-        if (!Friend)
-        {
-            DialogueContener.SetActive(true);
-            FindObjectOfType<AudioManager>().Play("DialPop");
-            ChatAn.SetBool("ChatDisapears", false);
-            yield return new WaitForSeconds(1f);
-            LetsPlayDialogue.SetActive(true);
+                yield return new WaitUntil(() => FirstFriendDialogue.activeSelf == false);
+                DialogueContener.SetActive(false);
+                FirstFriend = true;
+                SaveSystem.SaveGame(this);
+            }
+            if (!Friend)
+            {
+                DialogueContener.SetActive(true);
+                FindObjectOfType<AudioManager>().Play("DialPop");
+                ChatAn.SetBool("ChatDisapears", false);
+                yield return new WaitForSeconds(1f);
+                LetsPlayDialogue.SetActive(true);
 
-            yield return new WaitUntil(() => LetsPlayDialogue.activeSelf == false);
-            DialogueContener.SetActive(false);
-        }
+                yield return new WaitUntil(() => LetsPlayDialogue.activeSelf == false);
+                DialogueContener.SetActive(false);
+            }
 
-        CameraAn.SetBool("Connect 4", true);
-        InGame = true;
-        IslandUIAn.SetBool("Disappear", true);
-        StartCoroutine(DisableGameobjectOnRightTime(IslandUI));
-        if (Friend)
-        {
-            connect4Game.VsCloudy = false;
-        }
-        else
-        {
-            connect4Game.VsCloudy = true;
-        }
+            CameraAn.SetBool("Connect 4", true);
+            InGame = true;
+            IslandUIAn.SetBool("Disappear", true);
+            StartCoroutine(DisableGameobjectOnRightTime(IslandUI));
+            if (Friend)
+            {
+                connect4Game.VsCloudy = false;
+            }
+            else
+            {
+                connect4Game.VsCloudy = true;
+            }
 
-        yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(3f);
 
-        Connect4UIAn.SetBool("Disappear", false);
-        Connect4UI.SetActive(true);
-        if (Friend)
-        {
-            Connect4UICoudy.SetActive(false);
-            Score.SetActive(true);
-            Connect4UILeaveButton.SetActive(true);
-        }
-        else
-        {
-            Connect4UICoudy.SetActive(true);
-            Score.SetActive(false);
-            Connect4UILeaveButton.SetActive(true);
+            Connect4UIAn.SetBool("Disappear", false);
+            Connect4UI.SetActive(true);
+            if (Friend)
+            {
+                Connect4UICoudy.SetActive(false);
+                Score.SetActive(true);
+                Connect4UILeaveButton.SetActive(true);
+            }
+            else
+            {
+                Connect4UICoudy.SetActive(true);
+                Score.SetActive(false);
+                Connect4UILeaveButton.SetActive(true);
+            }
         }
     }
 
@@ -250,6 +253,10 @@ public class GameManager : MonoBehaviour
             IslandUI.SetActive(true);
         }
         PauseMenu.SetActive(false);
+        foreach (BoxCollider collumes in Collumes)
+        {
+            collumes.enabled = true;
+        }
     }
 
     public void PauseButton()
@@ -258,6 +265,10 @@ public class GameManager : MonoBehaviour
         IslandUIAn.SetBool("Disappear", true);
         StartCoroutine(DisableGameobjectOnRightTime(IslandUI));
         PauseMenu.SetActive(true);
+        foreach (BoxCollider collumes in Collumes)
+        {
+            collumes.enabled = false;
+        }
     }
 
     IEnumerator DisableGameobjectOnRightTime(GameObject gameObject)
@@ -275,6 +286,7 @@ public class GameManager : MonoBehaviour
     }
     public IEnumerator Winer()
     {
+        StartCoroutine(Winer());
         CameraAn.SetBool("Connect 4", false);
         InGame = false;
 
@@ -296,6 +308,7 @@ public class GameManager : MonoBehaviour
     }
     public IEnumerator Lost()
     {
+        StartCoroutine(Lost());
         CameraAn.SetBool("Connect 4", false);
         InGame = false;
         IslandUIAn.SetBool("Disappear", false);
@@ -318,6 +331,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator Win1stTime()
     {
+        StartCoroutine(Win1stTime());
         CameraAn.SetBool("Connect 4", false);
         InGame = false;
         IslandUIAn.SetBool("Disappear", false);
@@ -353,7 +367,7 @@ public class GameManager : MonoBehaviour
 
         SelectBuildingUI.SetActive(true);
 
-        yield return new WaitUntil(() => IslandUI.activeSelf == false);
+        yield return new WaitUntil(() => IslandUI.activeSelf == true);
 
         FirstGame = true;
         SaveSystem.SaveGame(this);
@@ -363,12 +377,14 @@ public class GameManager : MonoBehaviour
     {
         WinStreak++;
         SaveSystem.SaveGame(this);
+        FindObjectOfType<AudioManager>().Play("Win");
     }
 
     public void ResetStreakCount()
     {
         WinStreak = 0;
         SaveSystem.SaveGame(this);
+        FindObjectOfType<AudioManager>().Play("Lose");
     }
 
     private void Update()

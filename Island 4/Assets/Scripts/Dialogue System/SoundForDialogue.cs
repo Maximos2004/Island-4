@@ -6,7 +6,7 @@ public class SoundForDialogue : MonoBehaviour
 
     private AudioSource source;
 
-    private void Awake()
+    private void OnEnable()
     {
         instance = this;
         source = GetComponent<AudioSource>();
