@@ -83,7 +83,8 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
             WelcomeBackDialogue.SetActive(true);
 
-            yield return new WaitUntil(() => WelcomeBackDialogue.activeSelf == false); 
+            yield return new WaitUntil(() => WelcomeBackDialogue.activeSelf == false);
+            DialogueContener.SetActive(false);
         }
         if(FirstGame == false)
         {
